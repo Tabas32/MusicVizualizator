@@ -3,6 +3,7 @@ import librosa, librosa.display
 from IPython.display import display, Audio
 from os import listdir, path
 import numpy as np
+from matplotlib.mlab import PCA
 
 #open if exist mfcc.npy
 mfccFilename = "mfcc.npy"
@@ -27,9 +28,26 @@ for filename in listdir("samples"):
     sample = "samples/" + filename
     y, sr = librosa.load(sample)
 
+    # MFCC
     S = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
     log_S = librosa.logamplitude(S, ref_power=np.max)
     mfcc = librosa.feature.mfcc(S=log_S, sr=sr, n_mfcc=13)
+
+    #TODO:print(PCA(mfcc))
+
+    # TEMPO
+    onset_env = librosa.onset.onset_strength(y, sr=sr)
+    tempo = librosa.beat.estimate_tempo(onset_env, sr=sr)
+
+    # SPECTRAL CENTROIDS
+    cent = librosa.feature.spectral_centroid(y=y, sr=sr)
+    cent_mean = np.mean(cent)
+
+    # ZERO CROSSING RATE
+    zcr = librosa.feature.zero_crossing_rate(y, frame_length=22050, hop_length=22050)
+    total_zc = sum(librosa.core.zero_crossings(y))
+    print(zcr)
+    print(total_zc)
 
     if filename not in samplesList:
         print("Saving " + filename + " data")
