@@ -18,7 +18,7 @@ NEW_ROW_INDEX = [
 
 # open features data file
 try:
-    features_df = pd.read_csv('data.csv')
+    features_df = pd.read_csv('data.csv', index_col=0)
     print('data.csv opened')
 except FileNotFoundError:
     print("data.csv not found, making new")
@@ -37,7 +37,7 @@ for filename in listdir("samples"):
     sample = "samples/" + filename
     print('Scaning ' + sample)
 
-    if filename not in features_df.Sample_name:
+    if filename not in features_df.Sample_name.tolist():
         y, sr = librosa.load(sample)
         
         # MEAN AMPLITUDE
@@ -58,7 +58,7 @@ for filename in listdir("samples"):
         cent_mean = np.mean(cent)
 
         # ZERO CROSSING RATE
-        zcr = librosa.feature.zero_crossing_rate(y, frame_length=22050, hop_length=22050)
+        zcr = librosa.feature.zero_crossing_rate(y, frame_length=22050, hop_length=22050).flatten()
         total_zc = sum(librosa.core.zero_crossings(y))
 
         new_row = [
