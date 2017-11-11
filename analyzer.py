@@ -9,7 +9,6 @@ import pandas as pd
 NEW_ROW_INDEX = [
         'Sample_name', 
         'Mfcc', 
-        'Mean_amplitude', 
         'Tempo', 
         'Mean_spectral_centroids', 
         'Zero_crossing_rate', 
@@ -25,7 +24,6 @@ except FileNotFoundError:
     features_df = pd.DataFrame({
         'Sample_name':[], 
         'Mfcc':[], 
-        'Mean_amplitude':[], 
         'Tempo':[], 
         'Mean_spectral_centroids':[], 
         'Zero_crossing_rate':[],
@@ -40,9 +38,6 @@ for filename in listdir("samples"):
     if filename not in features_df.Sample_name.tolist():
         y, sr = librosa.load(sample)
         
-        # MEAN AMPLITUDE
-        mean_amplitude = np.mean(np.absolute(y))
-
         # MFCC
         S = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128, hop_length=22050, n_fft=22050)
         log_S = librosa.logamplitude(S, ref_power=np.max)
@@ -64,7 +59,6 @@ for filename in listdir("samples"):
         new_row = [
                 filename,
                 mfcc_1d_vector,
-                mean_amplitude,
                 tempo,
                 cent_mean,
                 zcr,
