@@ -1,7 +1,8 @@
 .ipynb_checkpoints
-tracksTemp
-tracks
-samples
+tracksTemp/
+tracks/
+samples/
 Untitled.ipynb
 zdroje.txt
 *.swp
+images/
