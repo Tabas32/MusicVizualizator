@@ -3,9 +3,9 @@ import tensorflow as tf
 
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
-x = tf.placeholder(tf.float32, [None, 784])
+x = tf.placeholder(tf.float32, [None, 549])
 
-W1 = tf.Variable(tf.zeros([540, 30]))
+W1 = tf.Variable(tf.zeros([549, 30]))
 b1 = tf.Variable(tf.zeros([30]))
 
 W2 = tf.Variable(tf.zeros([30, 15]))
@@ -23,7 +23,7 @@ sess = tf.InteractiveSession()
 tf.global_variables_initializer().run()
 
 #TODO: data zber zo subou po batchoch
-for _ in range(1000):
+for _ in range(10):
     batch_xs, batch_ys = mnist.train.next_batch(100)
     sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
