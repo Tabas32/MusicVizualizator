@@ -1,6 +1,14 @@
-import tensorflow as tf
+#import tensorflow as tf
+import numpy as np
 
+data = np.load("data_S.npy")
+y_data = np.array(list(data[:16, 1]), dtype=np.float)
 
+row_sums = y_data.sum(axis=1)
+new_matrix = y_data / row_sums[:, np.newaxis]
+
+print(new_matrix.shape)
+"""
 #TODO: make input
 
 n_nodes_hl1 = 500
@@ -60,3 +68,4 @@ def train_neural_network(x):
         print('Accuracy:', accuracy.eval({x:mnist.test.images, y:mnist.test.labels}))
 
 train_neural_network(x)
+"""

@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+import analyzer as alz
+import os
+import gan.procesImages as prImg
 
 # open features data file and return pandas dataframe
 def openDataFile(file_name):
@@ -41,4 +44,25 @@ def makeClrClassNpFile(data_csv_file_name):
     dataframe = openDataFile(data_csv_file_name)
     #TODO
 
-print(getAcusticNp('data.csv'))
+def makeNpSData():
+    directory = "images_S"
+    data = []
+
+    for each in os.listdir(directory):
+        img = os.path.join(directory, each)
+        img_arr = prImg.process_img_S(img)
+        
+        try:
+            song = alz.analyzeByName(each[:-4])
+            
+            data.append([img_arr, song])
+        except ValueError as err:
+            print("Error: " + repr(err))
+
+    return np.array(data)
+
+data = makeNpSData()
+np.save("data_S", data)
+
+data2 = np.load("data_S.npy")
+print(data2.shape)
