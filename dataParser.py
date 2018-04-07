@@ -61,7 +61,23 @@ def makeNpSData():
 
     return np.array(data)
 
-data = makeNpSData()
+def normalizeNpMusicData(np_file):
+    data = np.load(np_file)
+    songs = np.array(list(data[:, 1]), dtype=np.float)
+    
+    mean_norm = songs - np.mean(songs, axis=0)
+    
+    stand = np.power(mean_norm, 2)
+    stand = np.divide(mean_norm, np.mean(stand, axis=0))
+
+    norm = (stand - np.amin(stand, axis=0)) / np.ptp(stand, axis=0) -0.5
+
+    for i in range(data.shape[0]):
+        data[i, 1] = norm[i]
+
+    return data
+
+data = normalizeNpMusicData("data_S.npy")
 np.save("data_S", data)
 
 data2 = np.load("data_S.npy")

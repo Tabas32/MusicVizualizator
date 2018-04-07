@@ -1,4 +1,5 @@
 import tensorflow as tf
+import time
 import procesImages as input_data
 import numpy as np
 import matplotlib.pyplot as plt
@@ -75,10 +76,9 @@ def discriminator(x, y):
     D_h1 = tf.nn.relu(tf.matmul(inputs, D_W1) + D_b1)
     D_h2 = tf.nn.relu(tf.matmul(D_h1, D_W2) + D_b2)
     D_h3 = tf.nn.relu(tf.matmul(D_h2, D_W3) + D_b3)
-    D_logit = tf.matmul(D_h3, D_W4) + D_b4
-    D_prob = tf.nn.sigmoid(D_logit)
+    D_prob = tf.matmul(D_h3, D_W4) + D_b4
 
-    return D_prob, D_logit
+    return D_prob
 
 
 def plot(samples):
@@ -99,29 +99,19 @@ def plot(samples):
 
 G_sample = generator(Z,y)
 
-D_real, D_logit_real = discriminator(X,y)
-D_fake, D_logit_fake = discriminator(G_sample, y)
+D_real = discriminator(X,y)
+D_fake = discriminator(G_sample, y)
 
-D_loss = -tf.reduce_mean(tf.log(D_real) + tf.log(1. - D_fake))
-G_loss = -tf.reduce_mean(tf.log(D_fake))
-
-# Alternative losses:
-# -------------------
-#with tf.name_scope('D_loss'):
-#    D_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_logit_real, labels=tf.ones_like(D_logit_real)))
-#    D_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_logit_fake, labels=tf.zeros_like(D_logit_fake)))
-#    D_loss = D_loss_real + D_loss_fake
-
-#    tf.summary.scalar('D_loss', D_loss)
-
-#with tf.name_scope('G_loss'):
-#    G_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_logit_fake, labels=tf.ones_like(D_logit_fake)), name='G_loss')
+D_loss = tf.reduce_mean(D_real) - tf.reduce_mean(D_fake)
+G_loss = -tf.reduce_mean(D_fake)
 
 G_smr = tf.summary.scalar('G_loss', G_loss)
 D_smr = tf.summary.scalar('D_loss', D_loss)
 
-D_solver = tf.train.AdamOptimizer().minimize(D_loss, var_list=theta_D)
-G_solver = tf.train.AdamOptimizer().minimize(G_loss, var_list=theta_G)
+D_solver = tf.train.RMSPropOptimizer(learning_rate=5e-5).minimize(-D_loss, var_list=theta_D)
+G_solver = tf.train.RMSPropOptimizer(learning_rate=5e-5).minimize(G_loss, var_list=theta_G)
+
+clip_D = [p.assign(tf.clip_by_value(p, -0.01, 0.01)) for p in theta_D]
 
 mb_size = 20 # batch size?
 
@@ -132,11 +122,11 @@ data = np.load("..\\data_S.npy")
 with tf.Session() as sess:
     G_merge = tf.summary.merge([G_smr])
     D_merge = tf.summary.merge([D_smr])
-    train_writer = tf.summary.FileWriter('\\tmp\\train\\8', sess.graph)
+    train_writer = tf.summary.FileWriter('\\tmp\\train\\10', sess.graph)
     sess.run(tf.global_variables_initializer())
 
     saver = tf.train.Saver()
-    #saver.restore(sess, '\\tmp\\cgan_model4.ckpt')
+    saver.restore(sess, '\\tmp\\w_cgan_model2.ckpt')
 
     if not os.path.exists('out/'):
         os.makedirs('out/')
@@ -146,7 +136,7 @@ with tf.Session() as sess:
     G_loss_curr = 0
     D_loss_curr = 0
 
-    epochs = 100
+    epochs = 5000
     for it in range(epochs):
         if it % (epochs/10) == 0:
             y_sample = input_data.next_batch(16, data)
@@ -155,23 +145,34 @@ with tf.Session() as sess:
             samples = sess.run(G_sample, feed_dict={Z: sample_Z(16, z_dim), y:y_sample})
           
             fig = plot(samples)
-            plt.savefig('out/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
+
+            name = time.strftime('%d_%m_%Y_%H_%M_%S')
+            name = "out/" + name + ".png"
+            plt.savefig(name, bbox_inches='tight')
             i += 1
             plt.close(fig)
 
         batch = input_data.next_batch(mb_size, data)
         X_mb = np.array(list(batch[:, 0]), dtype=np.int)
         y_mb = np.array(list(batch[:, 1]), dtype=np.float)
-       
-        #if(G_loss_curr < 4):
-        D_summary, _, D_loss_curr = sess.run([D_merge, D_solver, D_loss], feed_dict={X: X_mb, Z: sample_Z(mb_size, z_dim), y:y_mb})
-        #if(D_loss_curr < 3.2):
-        G_summary, _, G_loss_curr = sess.run([G_merge, G_solver, G_loss], feed_dict={Z: sample_Z(mb_size, z_dim), y:y_mb})
+
+        for _ in range(5):
+            batch = input_data.next_batch(mb_size, data)
+            X_mb = np.array(list(batch[:, 0]), dtype=np.int)
+            y_mb = np.array(list(batch[:, 1]), dtype=np.float)
+
+            D_summary, _, D_loss_curr, _ = sess.run(
+                    [D_merge, D_solver, D_loss, clip_D], 
+                    feed_dict={X: X_mb, Z: sample_Z(mb_size, z_dim), y:y_mb}
+            )
+
+        G_summary, _, G_loss_curr = sess.run(
+                [G_merge, G_solver, G_loss], 
+                feed_dict={Z: sample_Z(mb_size, z_dim), y:y_mb}
+        )
 
 
-        #if(G_loss_curr < 4):
         train_writer.add_summary(D_summary, it)
-        #if(D_loss_curr < 3.2):
         train_writer.add_summary(G_summary, it)
 
         if it % (epochs/10) == 0:
@@ -181,7 +182,7 @@ with tf.Session() as sess:
             print()
 
         if it % (epochs/10) == 0:
-            save_path = saver.save(sess, '\\tmp\\cgan_model4.ckpt')
+            save_path = saver.save(sess, '\\tmp\\w_cgan_model2.ckpt')
             print("Model saved in path: %s" % save_path)
 
 #tensorboard --logdir=PATH
