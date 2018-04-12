@@ -13,3 +13,4 @@ gan/out
 gan/__pycache__
 __pycache__/
 gan/in
+gan/outV
