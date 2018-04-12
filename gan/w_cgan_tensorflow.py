@@ -136,7 +136,7 @@ with tf.Session() as sess:
     G_loss_curr = 0
     D_loss_curr = 0
 
-    epochs = 5000
+    epochs = 10000
     for it in range(epochs):
         if it % (epochs/10) == 0:
             y_sample = input_data.next_batch(16, data)

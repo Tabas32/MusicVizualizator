@@ -1,6 +1,10 @@
 #import tensorflow as tf
 import numpy as np
+import dataParser
 
+data = dataParser.makeNpSData()
+np.save("data_S_notNorm", data)
+"""
 data = np.load("data_S.npy")
 y_data = np.array(list(data[:16, 1]), dtype=np.float)
 
@@ -8,6 +12,7 @@ row_sums = y_data.sum(axis=1)
 new_matrix = y_data / row_sums[:, np.newaxis]
 
 print(new_matrix.shape)
+"""
 """
 #TODO: make input
 
