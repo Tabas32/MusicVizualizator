@@ -26,12 +26,12 @@ def analyzeByName(song_name):
         raise ValueError("Something wrong with load of " + sample)
     
     # MFCC
-    S = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128, hop_length=22050, n_fft=22050)
-    log_S = librosa.logamplitude(S, ref_power=np.max)
-    mfcc = librosa.feature.mfcc(S=log_S, sr=sr, n_mfcc=20)
-    mfcc_1d_vector = mfcc.flatten()
+    #S = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128, hop_length=22050, n_fft=22050)
+    #$log_S = librosa.logamplitude(S, ref_power=np.max)
+    #mfcc = librosa.feature.mfcc(S=log_S, sr=sr, n_mfcc=20)
+    #mfcc_1d_vector = mfcc.flatten()
 
-    analyzed.extend(mfcc_1d_vector)
+    #analyzed.extend(mfcc_1d_vector)
 
     # TEMPO
     onset_env = librosa.onset.onset_strength(y, sr=sr)
@@ -40,10 +40,10 @@ def analyzeByName(song_name):
     analyzed.append(tempo)
 
     # SPECTRAL CENTROIDS
-    cent = librosa.feature.spectral_centroid(y=y, sr=sr)
-    cent_mean = np.mean(cent)
+    #cent = librosa.feature.spectral_centroid(y=y, sr=sr)
+    #cent_mean = np.mean(cent)
 
-    analyzed.append(cent_mean)
+    #analyzed.append(cent_mean)
 
     # ZERO CROSSING RATE
     zcr = librosa.feature.zero_crossing_rate(y, frame_length=22050, hop_length=22050).flatten()
@@ -55,12 +55,12 @@ def analyzeByName(song_name):
 
 def analyzeLoadedSong(y):
     # MFCC
-    S = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128, hop_length=22050, n_fft=22050)
-    log_S = librosa.logamplitude(S, ref_power=np.max)
-    mfcc = librosa.feature.mfcc(S=log_S, sr=sr, n_mfcc=20)
-    mfcc_1d_vector = mfcc.flatten()
+    #S = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128, hop_length=22050, n_fft=22050)
+    #log_S = librosa.logamplitude(S, ref_power=np.max)
+    #mfcc = librosa.feature.mfcc(S=log_S, sr=sr, n_mfcc=20)
+    #mfcc_1d_vector = mfcc.flatten()
 
-    analyzed.extend(mfcc_1d_vector)
+    #analyzed.extend(mfcc_1d_vector)
 
     # TEMPO
     onset_env = librosa.onset.onset_strength(y, sr=sr)
@@ -69,10 +69,10 @@ def analyzeLoadedSong(y):
     analyzed.append(tempo)
 
     # SPECTRAL CENTROIDS
-    cent = librosa.feature.spectral_centroid(y=y, sr=sr)
-    cent_mean = np.mean(cent)
+    #cent = librosa.feature.spectral_centroid(y=y, sr=sr)
+    #cent_mean = np.mean(cent)
 
-    analyzed.append(cent_mean)
+    #analyzed.append(cent_mean)
 
     # ZERO CROSSING RATE
     zcr = librosa.feature.zero_crossing_rate(y, frame_length=22050, hop_length=22050).flatten()

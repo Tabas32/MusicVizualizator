@@ -3,7 +3,7 @@ import numpy as np
 import dataParser
 
 data = dataParser.makeNpSData()
-np.save("data_S_notNorm", data)
+np.save("mini_data_S_notNorm", data)
 """
 data = np.load("data_S.npy")
 y_data = np.array(list(data[:16, 1]), dtype=np.float)

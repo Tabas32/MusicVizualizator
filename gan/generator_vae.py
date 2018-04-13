@@ -19,9 +19,9 @@ else:
     quit()
 
 mb_size = 20
-z_dim = 100
+z_dim = 1000
 X_dim = input_data.WIDTH * input_data.HEIGHT
-y_dim = 549
+y_dim = 28
 h_dim = 128
 c = 0
 lr = 1e-3
@@ -116,7 +116,7 @@ solver = tf.train.AdamOptimizer().minimize(vae_loss)
 summary = tf.summary.scalar('VAE_loss', vae_loss)
 """
 
-data = np.load("..\\data_S.npy")
+#data = np.load("..\\data_S.npy")
 
 with tf.Session() as sess:
 #    merge = tf.summary.merge([summary])
@@ -124,24 +124,27 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
     saver = tf.train.Saver()
-    saver.restore(sess, '\\tmp\\cvae_model1.ckpt')
+    saver.restore(sess, '\\tmp\\model\\cvae_model2.ckpt')
 
     if not os.path.exists('outV/'):
         os.makedirs('outV/')
 
     i = 0
 
-    print('Scaning ' + input_song)
-    try:
-        song, sr = librosa.load(input_song, offset = input_time, duration = 25, sr = 22050)
-    except:
-        raise ValueError("Something wrong with load of " + input_song)
+    batch = []
+    for i in range(16):
+        print('Scaning ' + input_song + " " + str(i))
+        try:
+            song, sr = librosa.load(input_song, offset = input_time + i, duration = 25, sr = 22050)
+        except:
+            raise ValueError("Something wrong with load of " + input_song)
 
-    song_np = analyzer.analyzeLoadedSong(song, sr)
-    song_np = dataParser.normalizeSong("..\\data_S_notNorm.npy", song_np)
+        song_np = analyzer.analyzeLoadedSong(song, sr)
+        song_np = dataParser.normalizeSong("..\\mini_data_S_notNorm.npy", song_np)
+        batch.append(song_np)
 
     samples = sess.run(X_samples,
-                       feed_dict={z: np.random.randn(1, z_dim), c: [song_np]})
+                       feed_dict={z: np.random.randn(16, z_dim), c: batch})
 
     fig = plot(samples)
 

@@ -3,18 +3,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import os
-#from torch.autograd import Variable
 import procesImages as input_data
 import time
 
 
 mb_size = 20
-z_dim = 100
+z_dim = 1000
 X_dim = input_data.WIDTH * input_data.HEIGHT
-y_dim = 549
+y_dim = 28
 h_dim = 128
 c = 0
-lr = 5e-5  #1e-3
+lr = 1e-3
 
 
 def plot(samples):
@@ -104,22 +103,22 @@ vae_loss = tf.reduce_mean(recon_loss + kl_loss)
 solver = tf.train.AdamOptimizer().minimize(vae_loss)
 summary = tf.summary.scalar('VAE_loss', vae_loss)
 
-data = np.load("..\\data_S.npy")
+data = np.load("..\\mini_data_S.npy")
 
 with tf.Session() as sess:
     merge = tf.summary.merge([summary])
-    train_writer = tf.summary.FileWriter('\\tmp\\train_vae\\1', sess.graph)
+    train_writer = tf.summary.FileWriter('\\tmp\\train_vae\\4', sess.graph)
     sess.run(tf.global_variables_initializer())
 
     saver = tf.train.Saver()
-    saver.restore(sess, '\\tmp\\cvae_model1.ckpt')
+    saver.restore(sess, '\\tmp\\model\\cvae_model2.ckpt')
 
     if not os.path.exists('outV/'):
         os.makedirs('outV/')
 
     i = 0
 
-    epochs = 10000
+    epochs = 100000
     for it in range(epochs):
         batch = input_data.next_batch(mb_size, data)
         X_mb = np.array(list(batch[:, 0]), dtype=np.int)
@@ -133,7 +132,7 @@ with tf.Session() as sess:
             print('Loss: {:.4}'. format(loss))
             print()
 
-            save_path = saver.save(sess, '\\tmp\\cvae_model1.ckpt')
+            save_path = saver.save(sess, '\\tmp\\model\\cvae_model2.ckpt')
             print("Model saved in path: %s" % save_path)
 
             #y = np.zeros(shape=[16, y_dim])

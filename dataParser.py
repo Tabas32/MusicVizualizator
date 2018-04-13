@@ -95,8 +95,8 @@ def normalizeSong(np_file, np_song):
 
     return np_song
 
-data = normalizeNpMusicData("data_S.npy")
-np.save("data_S", data)
+data = normalizeNpMusicData("mini_data_S_notNorm.npy")
+np.save("mini_data_S", data)
 
-data2 = np.load("data_S.npy")
+data2 = np.load("mini_data_S.npy")
 print(data2.shape)
