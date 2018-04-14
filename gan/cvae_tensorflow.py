@@ -8,7 +8,7 @@ import time
 
 
 mb_size = 20
-z_dim = 1000
+z_dim = 100
 X_dim = input_data.WIDTH * input_data.HEIGHT
 y_dim = 28
 h_dim = 128
@@ -111,7 +111,7 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
     saver = tf.train.Saver()
-    saver.restore(sess, '\\tmp\\model\\cvae_model2.ckpt')
+    saver.restore(sess, '\\tmp\\model\\cvae_model3.ckpt')
 
     if not os.path.exists('outV/'):
         os.makedirs('outV/')
@@ -132,7 +132,7 @@ with tf.Session() as sess:
             print('Loss: {:.4}'. format(loss))
             print()
 
-            save_path = saver.save(sess, '\\tmp\\model\\cvae_model2.ckpt')
+            save_path = saver.save(sess, '\\tmp\\model\\cvae_model3.ckpt')
             print("Model saved in path: %s" % save_path)
 
             #y = np.zeros(shape=[16, y_dim])
