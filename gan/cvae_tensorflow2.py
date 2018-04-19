@@ -8,9 +8,9 @@ import time
 
 
 mb_size = 20
-z_dim = 1000
+z_dim = 100
 X_dim = input_data.WIDTH * input_data.HEIGHT
-y_dim = 549 #28
+y_dim = 28 #549
 h_dim = 128
 c = 0
 lr = 1e-3
@@ -27,7 +27,7 @@ def plot(samples):
         ax.set_xticklabels([])
         ax.set_yticklabels([])
         ax.set_aspect('equal')
-        plt.imshow(sample.reshape(input_data.HEIGHT, input_data.WIDTH), cmap='Greys_r')
+        plt.imshow(sample.reshape(input_data.HEIGHT, input_data.WIDTH), cmap='gray')
 
     return fig
 
@@ -127,15 +127,15 @@ vae_loss = tf.reduce_mean(recon_loss + kl_loss)
 solver = tf.train.AdamOptimizer().minimize(vae_loss)
 summary = tf.summary.scalar('VAE_loss', vae_loss)
 
-data = np.load("..\\data_S.npy")
+data = np.load("..\\data_R3.npy")
 
 with tf.Session() as sess:
     merge = tf.summary.merge([summary])
-    train_writer = tf.summary.FileWriter('\\tmp\\train_vae\\7', sess.graph)
+    train_writer = tf.summary.FileWriter('\\tmp\\train_vae\\12', sess.graph)
     sess.run(tf.global_variables_initializer())
 
     saver = tf.train.Saver()
-    saver.restore(sess, '\\tmp\\model\\cvae_model6.ckpt')
+    saver.restore(sess, '\\tmp\\model\\cvae_model12.ckpt')
 
     if not os.path.exists('outV/'):
         os.makedirs('outV/')
@@ -156,7 +156,7 @@ with tf.Session() as sess:
             print('Loss: {:.4}'. format(loss))
             print()
 
-            save_path = saver.save(sess, '\\tmp\\model\\cvae_model6.ckpt')
+            save_path = saver.save(sess, '\\tmp\\model\\cvae_model12.ckpt')
             print("Model saved in path: %s" % save_path)
 
             #y = np.zeros(shape=[16, y_dim])

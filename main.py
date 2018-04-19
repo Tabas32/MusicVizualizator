@@ -1,9 +1,41 @@
 #import tensorflow as tf
 import numpy as np
-import dataParser
+import dataParser as dP
+import gan.procesImages as pI
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
-data = dataParser.makeNpSData()
-np.save("mini_data_S_notNorm", data)
+"""
+data = dP.makeNpRData()
+np.save("data_R4_notNorm", data)
+
+data = dP.normalizeNpMusicData("data_R4_notNorm.npy")
+np.save("data_R4", data)
+
+data2 = np.load("data_R4.npy")
+print(data2.shape)
+"""
+def plot(samples):
+    fig = plt.figure(figsize=(4, 4))
+    gs = gridspec.GridSpec(4, 4)
+    gs.update(wspace=0.05, hspace=0.05)
+
+    for i, sample in enumerate(samples):
+        ax = plt.subplot(gs[i])
+        plt.axis('off')
+        ax.set_xticklabels([])
+        ax.set_yticklabels([])
+        ax.set_aspect('equal')
+        plt.imshow(sample.reshape(64, 64, -1)) #, cmap='gray')
+
+    return fig
+data = np.load("data_R4.npy")
+sample = np.array(list(data[:16, 0]), dtype=np.float)
+
+#img = pI.process_img_R("images_I\\Amazing_John_Newton-Grace_3.png")
+fig = plot(sample)
+plt.show()
+
 """
 data = np.load("data_S.npy")
 y_data = np.array(list(data[:16, 1]), dtype=np.float)

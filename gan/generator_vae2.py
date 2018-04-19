@@ -167,8 +167,11 @@ with tf.Session() as sess:
         song_np = dataParser.normalizeSong("..\\data_S_notNorm.npy", song_np)
         batch.append(song_np)
 
+    rand_row = np.random.randn(1, z_dim)
+    rand_z = np.repeat(rand_row, 16, 0)
+
     samples = sess.run(X_samples,
-                       feed_dict={z: np.random.randn(16, z_dim), c: batch})
+                       feed_dict={z: rand_z, c: batch})
 
     fig = plot(samples)
 

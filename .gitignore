@@ -7,7 +7,7 @@ zdroje.txt
 *.swp
 images/
 images_S/
-samples_I/
+images_I/
 samples_S/
 gan/out
 gan/__pycache__

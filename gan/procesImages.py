@@ -18,6 +18,17 @@ def process_img_S(image_name):
     flat_arr = arr.ravel()
     return (1*flat_arr)
 
+def process_img_R(image_name):
+    img = Image.open(image_name)
+    white_back = Image.new('RGB', img.size, (255,255,255))
+    white_back.paste(img, mask = img.split()[3])
+
+    #gray = white_back.convert('L')
+    small = white_back.resize((HEIGHT, WIDTH))
+    arr = np.array(small)
+    flat_arr = arr.ravel()
+    return flat_arr/255
+
 def load_imgs_as_np():
     directory = "..\images_S"
     images = []

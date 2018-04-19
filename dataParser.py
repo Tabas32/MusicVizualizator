@@ -16,34 +16,11 @@ def openDataFile(file_name):
 
     return features_df
 
-def getAcusticNp(data_csv_file_name):
-    dataframe = openDataFile(data_csv_file_name)
-    featuresNames = [
-        'Mfcc', 
-        'Tempo', 
-        'Mean_spectral_centroids', 
-        'Zero_crossing_rate',
-        'Total_zero_crossings'
-    ]
-
-    acusticNp = []
-
-    for i in range(len(dataframe.index)):
-        row = []
-        for col in featuresNames:
-            value = dataframe[col][i]
-            #TODO : parse string to proper list
-            if type(value) is not str:
-                row.append(value)
-        acusticNp.append(row)
-
-    return np.array(acusticNp)
-
-
-def makeClrClassNpFile(data_csv_file_name):
-    dataframe = openDataFile(data_csv_file_name)
-    #TODO
-
+"""
+Makes dataset of skices and songs
+@Returns:
+    np array of data
+"""
 def makeNpSData():
     directory = "images_S"
     data = []
@@ -61,6 +38,35 @@ def makeNpSData():
 
     return np.array(data)
 
+"""
+Makes dataset of realistic images and songs
+@Returns:
+    np array of data
+"""
+def makeNpRData():
+    directory = "images_I"
+    data = []
+
+    for each in os.listdir(directory):
+        img = os.path.join(directory, each)
+        img_arr = prImg.process_img_R(img)
+        
+        try:
+            song = alz.analyzeByName(each[:-4])
+            
+            data.append([img_arr, song])
+        except ValueError as err:
+            print("Error: " + repr(err))
+
+    return np.array(data)
+
+""" 
+@Parms:
+    np_file: name of unnormalized data file
+
+@Returns:
+    normalized np array of data
+"""
 def normalizeNpMusicData(np_file):
     data = np.load(np_file)
     songs = np.array(list(data[:, 1]), dtype=np.float)
@@ -76,7 +82,15 @@ def normalizeNpMusicData(np_file):
         data[i, 1] = norm[i]
 
     return data
-	
+
+""" 
+@Parms:
+    np_file: name of unnormalized data file
+    np_song: np array of analyzed song
+
+@Returns:
+    normalized np array of song
+"""
 def normalizeSong(np_file, np_song):
     data = np.load(np_file)
     songs = np.array(list(data[:, 1]), dtype=np.float)
@@ -95,8 +109,8 @@ def normalizeSong(np_file, np_song):
 
     return np_song
 
-data = normalizeNpMusicData("mini_data_S_notNorm.npy")
-np.save("mini_data_S", data)
+#data = normalizeNpMusicData("mini_data_S_notNorm.npy")
+#np.save("mini_data_S", data)
 
-data2 = np.load("mini_data_S.npy")
-print(data2.shape)
+#data2 = np.load("mini_data_S.npy")
+#print(data2.shape)
