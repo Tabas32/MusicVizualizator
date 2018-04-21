@@ -15,7 +15,7 @@ def xavier_init(size):
 def lrelu(x, alpha):
     return tf.nn.relu(x) - alpha * tf.nn.relu(-x)
 
-y_dim = 549
+y_dim = 28 #549
 z_dim = 100
 
 #=================DISCRIMINATOR==========================
@@ -117,16 +117,16 @@ mb_size = 20 # batch size?
 
 #  row of data [0] =  image
 #              [1] =  song
-data = np.load("..\\data_S.npy")
+data = np.load("..\\mini_data_S.npy")
 
 with tf.Session() as sess:
     G_merge = tf.summary.merge([G_smr])
     D_merge = tf.summary.merge([D_smr])
-    train_writer = tf.summary.FileWriter('\\tmp\\train\\10', sess.graph)
+    train_writer = tf.summary.FileWriter('\\tmp\\train\\11', sess.graph)
     sess.run(tf.global_variables_initializer())
 
     saver = tf.train.Saver()
-    saver.restore(sess, '\\tmp\\w_cgan_model2.ckpt')
+    saver.restore(sess, '\\tmp\\w_cgan_model3.ckpt')
 
     if not os.path.exists('out/'):
         os.makedirs('out/')
@@ -137,7 +137,7 @@ with tf.Session() as sess:
     D_loss_curr = 0
 
     epochs = 10000
-    for it in range(epochs):
+    for it in range(epochs+1):
         if it % (epochs/10) == 0:
             y_sample = input_data.next_batch(16, data)
             y_sample = np.array(list(y_sample[:, 1]), dtype=np.float)
@@ -182,7 +182,7 @@ with tf.Session() as sess:
             print()
 
         if it % (epochs/10) == 0:
-            save_path = saver.save(sess, '\\tmp\\w_cgan_model2.ckpt')
+            save_path = saver.save(sess, '\\tmp\\w_cgan_model3.ckpt')
             print("Model saved in path: %s" % save_path)
 
 #tensorboard --logdir=PATH

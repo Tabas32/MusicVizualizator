@@ -29,7 +29,7 @@ def xavier_init(size):
 def lrelu(x, alpha):
     return tf.nn.relu(x) - alpha * tf.nn.relu(-x)
 
-y_dim = 549
+y_dim = 28 #549
 z_dim = 100
 
 #=================DISCRIMINATOR==========================
@@ -109,13 +109,13 @@ except:
     raise ValueError("Something wrong with load of " + input_song)
 
 song_np = analyzer.analyzeLoadedSong(song, sr)
-song_np = dataParser.normalizeSong("..\\data_S_notNorm.npy", song_np)
+song_np = dataParser.normalizeSong("..\\mini_data_S_notNorm.npy", song_np)
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
     saver = tf.train.Saver()
-    saver.restore(sess, '\\tmp\\w_cgan_model2.ckpt')
+    saver.restore(sess, '\\tmp\\w_cgan_model3.ckpt')
 
     if not os.path.exists('out/'):
         os.makedirs('out/')
