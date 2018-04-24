@@ -29,7 +29,7 @@ def xavier_init(size):
 def lrelu(x, alpha):
     return tf.nn.relu(x) - alpha * tf.nn.relu(-x)
 
-y_dim = 28 #549
+y_dim = 549#28 
 z_dim = 100
 
 #=================DISCRIMINATOR==========================
@@ -102,25 +102,30 @@ def plot(samples):
 
 G_sample = generator(Z,y)
 
-print('Scaning ' + input_song)
-try:
-    song, sr = librosa.load(input_song, offset = input_time, duration = 25, sr = 22050)
-except:
-    raise ValueError("Something wrong with load of " + input_song)
-
-song_np = analyzer.analyzeLoadedSong(song, sr)
-song_np = dataParser.normalizeSong("..\\mini_data_S_notNorm.npy", song_np)
+batch = []
+for i in range(16):
+    print('Scaning ' + input_song + " " + str(input_time + i))
+    try:
+        song, sr = librosa.load(input_song, offset = input_time + i, duration = 25, sr = 22050)
+    except:
+        raise ValueError("Something wrong with load of " + input_song)
+        
+    #song_np = analyzer.analyzeLoadedSongMini(song, sr)
+    #song_np = dataParser.normalizeSong("..\\mini_data_S_notNorm.npy", song_np)
+    song_np = analyzer.analyzeLoadedSong(song, sr)
+    song_np = dataParser.normalizeSong("..\\data_S_notNorm.npy", song_np)
+    batch.append(song_np)
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
     saver = tf.train.Saver()
-    saver.restore(sess, '\\tmp\\w_cgan_model3.ckpt')
+    saver.restore(sess, '\\tmp\\w_cgan_model2.ckpt')
 
     if not os.path.exists('out/'):
         os.makedirs('out/')
 
-    samples = sess.run(G_sample, feed_dict={Z: sample_Z(1, z_dim), y:[song_np]})
+    samples = sess.run(G_sample, feed_dict={Z: sample_Z(16, z_dim), y:batch})
   
     fig = plot(samples)
 
