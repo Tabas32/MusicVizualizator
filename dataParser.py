@@ -60,6 +60,30 @@ def makeNpRData():
 
     return np.array(data)
 
+"""
+Makes dataset for color clasifier
+Gets input from user, which color is for which song
+@Returns:
+    np array of data
+"""
+def makeNpCCData():
+    directory = "images_I"
+    data = []
+
+    for each in os.listdir(directory):
+        color = np.zeros(shape=[15])
+        in_color = int(input(each[:-4] + " color: "))
+        color[in_color] = 1
+
+        try:
+            song = alz.analyzeByName(each[:-4])
+            
+            data.append([color, song])
+        except ValueError as err:
+            print("Error: " + repr(err))
+
+    return np.array(data)
+
 """ 
 @Parms:
     np_file: name of unnormalized data file

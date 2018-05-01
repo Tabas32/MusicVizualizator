@@ -5,6 +5,15 @@ import gan.procesImages as pI
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
+data = dP.makeNpCCData()
+np.save("data_CC_notNorm", data)
+
+data = dP.normalizeNpMusicData("data_CC_notNorm.npy")
+np.save("data_CC", data)
+
+data2 = np.load("data_CC.npy")
+print(data2.shape)
+
 """
 data = dP.makeNpRData()
 np.save("data_R4_notNorm", data)
@@ -14,7 +23,7 @@ np.save("data_R4", data)
 
 data2 = np.load("data_R4.npy")
 print(data2.shape)
-"""
+
 def plot(samples):
     fig = plt.figure(figsize=(4, 4))
     gs = gridspec.GridSpec(4, 4)
@@ -35,6 +44,7 @@ sample = np.array(list(data[:16, 0]), dtype=np.float)
 #img = pI.process_img_R("images_I\\Amazing_John_Newton-Grace_3.png")
 fig = plot(sample)
 plt.show()
+"""
 
 """
 data = np.load("data_S.npy")
