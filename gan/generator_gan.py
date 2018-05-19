@@ -12,9 +12,10 @@ import dataParser
 
 input_song = ""
 input_time = 0
-if len(sys.argv) == 3:
+if len(sys.argv) == 4:
     input_song = sys.argv[1]
     input_time = int(sys.argv[2])
+    out_num    = int(sys.argv[3])
     print("For analyzation: " + input_song + " at second " + str(input_time))
 else:
     print("Invalid num of arguments")
@@ -103,7 +104,7 @@ def plot(samples):
 G_sample = generator(Z,y)
 
 batch = []
-for i in range(16):
+for i in range(out_num):
     print('Scaning ' + input_song + " " + str(input_time + i))
     try:
         song, sr = librosa.load(input_song, offset = input_time + i, duration = 25, sr = 22050)
@@ -125,7 +126,7 @@ with tf.Session() as sess:
     if not os.path.exists('out/'):
         os.makedirs('out/')
 
-    samples = sess.run(G_sample, feed_dict={Z: sample_Z(16, z_dim), y:batch})
+    samples = sess.run(G_sample, feed_dict={Z: sample_Z(out_num, z_dim), y:batch})
   
     fig = plot(samples)
 

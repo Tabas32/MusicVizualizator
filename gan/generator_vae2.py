@@ -10,9 +10,10 @@ import sys, librosa, analyzer, dataParser
 
 input_song = ""
 input_time = 0
-if len(sys.argv) == 3:
+if len(sys.argv) == 4:
     input_song = sys.argv[1]
     input_time = int(sys.argv[2])
+    out_num     = int(sys.argv[3])
     print("For analyzation: " + input_song + " at second " + str(input_time))
 else:
     print("Invalid num of arguments")
@@ -156,8 +157,8 @@ with tf.Session() as sess:
     i = 0
 
     batch = []
-    for i in range(16):
-        print('Scaning ' + input_song + " " + str(i))
+    for i in range(out_num):
+        print('Scaning ' + input_song + " " + str(input_time + i))
         try:
             song, sr = librosa.load(input_song, offset = input_time + i, duration = 25, sr = 22050)
         except:
@@ -168,7 +169,7 @@ with tf.Session() as sess:
         batch.append(song_np)
 
     rand_row = np.random.randn(1, z_dim)
-    rand_z = np.repeat(rand_row, 16, 0)
+    rand_z = np.repeat(rand_row, out_num, 0)
 
     samples = sess.run(X_samples,
                        feed_dict={z: rand_z, c: batch})
